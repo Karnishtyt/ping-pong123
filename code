@@ -1,0 +1,68 @@
+from pygame import *
+
+w = display.set_mode((700, 500))
+display.set_caption('Pin Pong!')
+bkg = transform.scale(image.load('fon.png'), (700,500))
+clock = time.Clock()
+fps = 60
+game = True
+sp_x = 2
+sp_y = 2
+fin = False
+class GameSprite(sprite.Sprite):
+    def __init__(self,p_image,p_x,p_y,p_speed,s1 = 50, s2 = 50):
+        super().__init__()
+        self.image = transform.scale(image.load(p_image),(s1,s2))
+        self.speed = p_speed
+        self.rect = self.image.get_rect()
+        self.rect.x = p_x
+        self.rect.y = p_y
+    def reset(self):
+        w.blit(self.image, (self.rect.x, self.rect.y))
+
+
+class Player(GameSprite):
+    def update(self):
+        k_p = key.get_pressed()
+
+        if k_p[K_LEFT] and self.rect.x > 5:
+            self.rect.x -= self.speed
+        if k_p[K_RIGHT] and self.rect.x < 650:
+            self.rect.x += self.speed
+class Player1(GameSprite):
+    def update(self):
+        k_p = key.get_pressed()
+        if k_p[K_a] and self.rect.x > 5:
+            self.rect.x -= self.speed
+        if k_p[K_d] and self.rect.x < 650:
+            self.rect.x += self.speed
+
+p1 = Player('platform.png',300,400,8,120,20)
+p2 = Player1('platform.png',300,50,8,120,20)
+
+ball = GameSprite('ball_1615463127.png', 335,220,0)
+while game:
+    for i in event.get():
+        if i.type == QUIT:
+            game = False
+
+    if fin == False:
+        w.blit(bkg,(0,0))
+
+        ball.reset()
+        ball.rect.x += sp_x
+        ball.rect.y += sp_y
+        if ball.rect.x > 650 or ball.rect.x < 0:
+            sp_x *= -1
+
+        if sprite.collide_rect(p1,ball) or sprite.collide_rect(p2,ball):
+            sp_y *= -1 
+        
+
+        p1.reset()
+        p1.update()
+        p2.reset()
+        p2.update()
+    
+    display.update()
+    clock.tick(fps)
